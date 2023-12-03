@@ -15,8 +15,8 @@ func main() {
 		err_msg := fmt.Sprintf("%s not found or readable\n", input_file)
 		panic(err_msg)
 	}
-	example := string(bytes)
-	lines := strings.Split(example,"\n")
+	input := string(bytes)
+	lines := strings.Split(input,"\n")
 	part1(lines)
 	part2(lines)
 }
@@ -48,14 +48,8 @@ func part2(lines []string) {
 	output := 0
 	regex := "one|two|three|four|five|six|seven|eight|nine|1|2|3|4|5|6|7|8|9"
 	regex_r := reverse(regex)
-	regex1, err := regexp.Compile(regex)
-	if err != nil {
-		panic("regex failed to compile")
-	}
-	regex2, err := regexp.Compile(regex_r)
-	if err != nil {
-		panic("regex failed to compile")
-	}
+	regex1, _ := regexp.Compile(regex)
+	regex2, _ := regexp.Compile(regex_r)
 
 	mapping := map[string]int{
 		"one": 1,
@@ -77,7 +71,6 @@ func part2(lines []string) {
 		"8": 8,
 		"9": 9,
 	}
-
 
 	for i := 0; i < len(lines); i++ {
 		line := lines[i]
