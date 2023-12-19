@@ -96,7 +96,7 @@ func part2(input string){
 		if m != nil {
 			for j, key := range m.Keys() {
 				value, _:= m.Get(key)
-				fmt.Println(i, key, value, j)
+				// fmt.Println(i, key, value, j)
 
 				total += (i+1)*(j+1)*value
 			}
