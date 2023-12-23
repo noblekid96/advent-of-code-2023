@@ -19,12 +19,6 @@ type Direction struct {
 }
 
 
-// var dirs = []Point{
-// 	Point{0,1}, // Right
-// 	Point{-1,0},
-// 	Point{0,-1},
-// 	Point{1,-0},
-// }
 func PrettyFormat(i interface{}) string {
       s, _ := json.MarshalIndent(i, "", "\t")
       return string(s)
