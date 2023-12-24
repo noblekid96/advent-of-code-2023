@@ -55,7 +55,7 @@ func main() {
 	part2(lines)
 }
 
-func part1(lines []string){
+func possibleSpots(lines []string, stop int) int {
 	m := len(lines)
 	n := len(lines[0])
 	var sp Point
@@ -67,9 +67,9 @@ func part1(lines []string){
 			}
 		}
 	}
-	ans := map[Point]bool{}
+	ans := 0
 	seen := map[Point]bool{sp: true}
-	q := []State{{sp, 64}}
+	q := []State{{sp, 0}}
 
 	for len(q) > 0 {
 		state := q[0]
@@ -79,11 +79,11 @@ func part1(lines []string){
 		y := state.p.Y
 		s := state.s
 
-		if s % 2 == 0 {
-			ans[Point{x,y}] = true
+		if (s % 2) == (stop % 2) {
+			ans += 1
 		}
 
-		if s == 0 {
+		if s == stop+1 {
 			continue
 		}
 
@@ -94,7 +94,19 @@ func part1(lines []string){
 			nx := x+dx
 			ny := y+dy
 
-			if nx < 0 || nx >= m || ny < 0 || ny >= n || lines[nx][ny] == '#' {
+			// if nx < 0 || nx >= m || ny < 0 || ny >= n || lines[nx % 131][ny % 131] == '#' {
+			// 	continue
+			// }
+			modx := nx % 131
+			mody := ny % 131
+			if modx < 0 {
+				modx += 131
+			}
+
+			if mody < 0 {
+				mody += 131
+			}
+			if lines[modx][mody] == '#' {
 				continue
 			}
 			if _, exists := seen[Point{nx,ny}]; exists {
@@ -102,14 +114,40 @@ func part1(lines []string){
 			}
 
 			seen[Point{nx,ny}] = true
-			q = append(q, State{Point{nx,ny}, s-1})
+			q = append(q, State{Point{nx,ny}, s+1})
 		}
 	}
 
 	// fmt.Println("Ans", ans)
-	fmt.Println("P1 ans", len(ans))
+	// fmt.Println("P1 ans", len(ans))
+	return ans
+}
+
+func part1(lines []string){
+	p1 := possibleSpots(lines, 64)
+	fmt.Println("P1 ans", p1)
+}
+
+func quad(y []int, n int) int {
+	a := (y[2] - (2 * y[1]) + y[0]) / 2
+	b := y[1] - y[0] - a
+	c := y[0]
+    return (a * n*n) + (b * n) + c
 }
 
 func part2(lines []string){
+    goal := 26501365
+    size := len(lines)
+    edge := size / 2
 
+	y := []int{}
+
+	for i := 0 ; i < 3 ; i ++ {
+		calc := possibleSpots(lines, (edge + i * size))
+		y = append(y, calc)
+	}
+
+	// fmt.Println("Y", y)
+    ans := quad(y, ((goal - edge) / size))
+	fmt.Println("Ans", ans)
 }
