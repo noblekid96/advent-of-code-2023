@@ -118,8 +118,6 @@ func possibleSpots(lines []string, stop int) int {
 		}
 	}
 
-	// fmt.Println("Ans", ans)
-	// fmt.Println("P1 ans", len(ans))
 	return ans
 }
 
