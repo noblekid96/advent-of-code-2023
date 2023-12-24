@@ -39,6 +39,20 @@ func splitColonFn (c rune) bool {
 	return c == ':'
 }
 
+func Min(i, j int) int {
+	if i < j {
+		return i
+	}
+	return j
+}
+
+func Max(i, j int) int {
+	if i > j {
+		return i
+	}
+	return j
+}
+
 
 func main() {
 	input_file := os.Args[1]
@@ -136,12 +150,12 @@ func part1(blocks []string ){
 		}
 
 	}
-	fmt.Println("Workflow", workflow)
+	// fmt.Println("Workflow", workflow)
 
 	total := 0
 
 	for _, line := range strings.FieldsFunc(block2, splitFn){
-		fmt.Println(line)
+		// fmt.Println(line)
 
 		item := map[string]int{}
 
@@ -159,7 +173,7 @@ func part1(blocks []string ){
 			item[ch] = n
 		}
 
-		fmt.Println("Item", item)
+		// fmt.Println("Item", item)
 
 		if acceptable(item, "in", workflow){
 			for _, v := range item {
@@ -171,8 +185,71 @@ func part1(blocks []string ){
 	fmt.Println("P1 total", total)
 }
 
-func count(ranges map[string][]int) int {
-	return 0
+func count(ranges map[string][]int, name string, workflows map[string]Instruction) int64 {
+	// fmt.Println("Ranges", ranges)
+	// fmt.Println("Name", name)
+	// fmt.Println()
+	if name == "R"{
+		return 0
+	}
+	if name == "A" {
+		var product int64
+		product = 1
+
+		for _, r := range ranges {
+			lo, hi := r[0], r[1]
+			product *= int64(hi) - int64(lo) + 1
+		}
+		return product
+	}
+
+	var total int64
+	total = 0
+	workflow := workflows[name]
+	rules := workflow.rules
+	fallback := workflow.fallback
+	// useFallback := false
+
+	for _, rule := range rules {
+		ruleRange := ranges[rule.key]
+		lo, hi := ruleRange[0], ruleRange[1]
+		cmp := rule.cmp
+		target := rule.target
+		key := rule.key
+		n := rule.n
+		var T []int
+		var F []int
+		if cmp == "<" {
+			T = []int{lo, Min(n-1,hi)}
+			F = []int{Max(n, lo), hi}
+		} else {
+			T = []int{Max(n+1, lo), hi}
+			F = []int{lo, Min(n, hi)}
+		}
+
+		if T[0] <= T[1] {
+			rangeCopy := make(map[string][]int)
+			for k, v := range ranges {
+				rangeCopy[k] = v
+			}
+			rangeCopy[key] = T
+			total += count(rangeCopy, target, workflows)
+		}
+
+		if F[0] <= F[1] {
+			rangeCopy := make(map[string][]int)
+			for k, v := range ranges {
+				rangeCopy[k] = v
+			}
+			rangeCopy[key] = F
+			ranges = rangeCopy
+		} else {
+			break
+		}
+	}
+	total += count(ranges, fallback, workflows)
+
+	return total
 }
 
 func part2(blocks []string){
@@ -211,37 +288,17 @@ func part2(blocks []string){
 		}
 
 	}
-	fmt.Println("Workflow", workflow)
+	// fmt.Println("Workflow", workflow)
 
-	total := 0
+	ranges := map[string][]int{}
+	word := "xmas"
 
-	// for _, line := range strings.FieldsFunc(block2, splitFn){
-	// 	fmt.Println(line)
+	for i := 0; i < len(word); i ++ {
+		ranges[string(word[i])] = []int{1,4000}
+	}
 
-	// 	item := map[string]int{}
+	total := count(ranges, "in", workflow)
 
-	// 	for _, segment := range strings.FieldsFunc(line[1:len(line)-1], splitCommaFn){
-	// 		segmentParts := strings.FieldsFunc(segment, splitEqualFn)
-	// 		ch := segmentParts[0]
-	// 		nStr := segmentParts[1]
-
-	// 		n, err := strconv.Atoi(nStr)
-
-	// 		if err != nil {
-	// 			panic(err)
-	// 		}
-
-	// 		item[ch] = n
-	// 	}
-
-	// 	fmt.Println("Item", item)
-
-	// 	if acceptable(item, "in", workflow){
-	// 		for _, v := range item {
-	// 			total += v
-	// 		}
-	// 	}
-	// }
 
 	fmt.Println("P2 total", total)
 }
