@@ -26,7 +26,6 @@ func dirRight(p Point) Point {
 	return Point{-p.Y, p.X}
 }
 
-
 func Min(i, j int) int {
 	if i < j {
 		return i
